@@ -8,7 +8,7 @@ import (
 
 type User struct {
 	gorm.Model
-	Username  string `json:"username" binding:"required"`
+	Username  string `json:"username" binding:"required,max=35"`
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
 	Email     string `json:"email"`

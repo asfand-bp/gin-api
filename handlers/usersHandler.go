@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator"
 	"gorm.io/gorm"
 )
@@ -58,7 +59,7 @@ func PostUser(c *gin.Context) {
 	var u models.User
 
 	// Bind JSON from the request body
-	if err := c.ShouldBindJSON(&u); err != nil {
+	if err := c.ShouldBindWith(&u, binding.JSON); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
@@ -70,10 +71,10 @@ func PostUser(c *gin.Context) {
 
 func UpdateUser(c *gin.Context) {
 	// Extract id from url and convert it to int
-	id, _ := strconv.Atoi(c.Param("id"))
+	id, _ := strconv.Atoi(c.Param("id")) // NO NEED TO TYPE CAST to INT
 
 	var user models.User
-	res := db.DB.First(&user, id)
+	res := db.DB.First(&user, id) // id can be either in string format or int doesnt matter
 
 	// If any error
 	if res.Error != nil {
@@ -92,17 +93,17 @@ func UpdateUser(c *gin.Context) {
 	}
 
 	// Bind JSON from the request body
-	if err := c.ShouldBindJSON(&user); err != nil {
+	if err := c.ShouldBindWith(&user, binding.JSON); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
-	/* // Validate data
+	// Validate data
 	err := validate.Struct(user)
 	if err != nil {
 		c.JSON(400, gin.H{"error": "Validation error"})
 		return
-	} */
+	}
 
 	// Update the user in the database
 	if err := db.DB.Model(&user).Where("id = ?", id).Updates(user).Error; err != nil {
