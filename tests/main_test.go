@@ -1,51 +1,32 @@
 package tests
 
 import (
-	"app/db"
-	"app/models"
-	"fmt"
 	"os"
 	"testing"
-	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
-var BASE_URL string
-var API_URL string
+var R *gin.Engine // Variale to hold Reference to Router Engine
 
-func startdb() {
-	db.StartDB() // Initialize the database connection
-	// Migrate the schema(s)
-	db.DB.AutoMigrate(&models.User{})
-	db.DB.AutoMigrate(&models.Grocery{})
-}
-
-func setup_router() {
-	router := gin.Default()
-
-	go func() {
-		router.Run(":8080")
-	}()
-
-	time.Sleep(10 * time.Second)
+func init() {
+	StartDBAndMigrate()
+	R = SetUpRouter()
 }
 
 func setup() {
 	// Add your setup code here.
 	// This code will run before the tests.
 	// You can initialize resources, set up configurations, etc.
-	BASE_URL = "http://localhost:8080/"
-	API_URL = fmt.Sprintf("%s/api", BASE_URL)
-
-	startdb()
-	setup_router()
 }
 
 func teardown() {
 	// Add your teardown code here.
 	// This code will run after the tests.
 	// You can clean up resources, close connections, etc.
+
+	// Destroy or delete database
+	DestroyDB()
 }
 
 func TestMain(m *testing.M) {

@@ -59,7 +59,7 @@ func PostUser(c *gin.Context) {
 	var u models.User
 
 	// Bind JSON from the request body
-	if err := c.ShouldBindWith(&u, binding.JSON); err != nil {
+	if err := c.ShouldBindJSON(&u); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
