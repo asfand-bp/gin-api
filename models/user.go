@@ -14,6 +14,12 @@ type User struct {
 	Email     string `json:"email"`
 }
 
+type UserUpdate struct {
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Email     string `json:"email"`
+}
+
 // NOT USING THESE FUNCTIONS BELOW FOR NOW
 
 func GetUsers() []User {
