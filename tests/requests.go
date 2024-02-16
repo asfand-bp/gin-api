@@ -1,47 +1,14 @@
 package tests
 
 import (
-	"app/db"
-	"app/handlers"
-	"app/models"
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"testing"
 
 	"github.com/gin-gonic/gin"
 )
-
-func StartDBAndMigrate() {
-	db.StartDB() // Initialize the database connection
-	// Migrate the schema(s)
-	db.DB.AutoMigrate(&models.User{})
-	db.DB.AutoMigrate(&models.Grocery{})
-}
-
-func SetUpRouter() *gin.Engine {
-	router := gin.Default()
-	// Routes
-	router.GET("/users", handlers.GetUsers)
-	router.POST("/users", handlers.PostUser)
-	router.GET("/users/:id", handlers.GetUser)
-	router.PUT("/users/:id", handlers.UpdateUser)
-	router.DELETE("/users/:id", handlers.DeleteUser)
-
-	return router
-}
-
-func DestroyDB() {
-	databaseFilePath := "./app.db"
-	err := os.Remove(databaseFilePath)
-	if err != nil {
-		fmt.Printf("Error deleting file: %v\n", err)
-		return
-	}
-}
 
 // MakeGetRequest performs a GET request and returns the response recorder
 func MakeGetRequest(t *testing.T, router *gin.Engine, url string) *httptest.ResponseRecorder {

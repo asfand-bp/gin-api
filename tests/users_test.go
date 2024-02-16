@@ -29,10 +29,12 @@ func TestCreateUser(t *testing.T) {
 	assert.NotEmpty(t, user)
 
 	// Assigning the user id for use in later tests
-	USER_ID = user.ID
+	DeleteUser(t, R, fmt.Sprintf("%v", user.ID))
 }
 
 func TestGetUsers(t *testing.T) {
+	user_id := CreateUser(t, R).ID
+
 	// Make GET api request
 	w := MakeGetRequest(t, R, "/users")
 
@@ -41,28 +43,35 @@ func TestGetUsers(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, w.Code)
 	assert.NotEmpty(t, users)
+
+	DeleteUser(t, R, fmt.Sprintf("%v", user_id))
 }
 
 func TestGetUser(t *testing.T) {
+	user_id := CreateUser(t, R).ID
+
 	// Make GET api request
-	w := MakeGetRequest(t, R, fmt.Sprintf("/users/%v", USER_ID))
+	w := MakeGetRequest(t, R, fmt.Sprintf("/users/%v", user_id))
 
 	var user models.User
 	json.Unmarshal(w.Body.Bytes(), &user)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 	assert.NotEmpty(t, user)
+
+	DeleteUser(t, R, fmt.Sprintf("%v", user_id))
 }
 
 func TestUpdateUser(t *testing.T) {
-	NEW_FIRSTNAME := "test_user_new"
+	user_id := CreateUser(t, R).ID
 
+	NEW_FIRSTNAME := "test_user_new"
 	body := models.UserUpdate{
 		FirstName: NEW_FIRSTNAME,
 	}
 
 	// Make PUT api request
-	w := MakePutRequest(t, R, fmt.Sprintf("/users/%v", USER_ID), body)
+	w := MakePutRequest(t, R, fmt.Sprintf("/users/%v", user_id), body)
 
 	var user models.User
 	json.Unmarshal(w.Body.Bytes(), &user)
@@ -70,11 +79,15 @@ func TestUpdateUser(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 	assert.NotEmpty(t, user)
 	assert.Equal(t, user.FirstName, NEW_FIRSTNAME)
+
+	DeleteUser(t, R, fmt.Sprintf("%v", user_id))
 }
 
 func TestDeleteUser(t *testing.T) {
+	user_id := CreateUser(t, R).ID
+
 	// Make PUT api request
-	w := MakeDeleteRequest(t, R, fmt.Sprintf("/users/%v", USER_ID))
+	w := MakeDeleteRequest(t, R, fmt.Sprintf("/users/%v", user_id))
 
 	assert.Equal(t, http.StatusOK, w.Code)
 }

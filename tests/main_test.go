@@ -8,7 +8,6 @@ import (
 )
 
 var R *gin.Engine // Variale to hold Reference to Router Engine
-var USER_ID uint
 
 func init() {
 	StartDBAndMigrate()
