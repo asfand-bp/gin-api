@@ -93,8 +93,28 @@ func UpdateUser(c *gin.Context) {
 	}
 
 	// Bind JSON from the request body
-	if err := c.ShouldBindWith(&user, binding.JSON); err != nil {
+	var body models.User
+	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Update the fields provided
+	if body.Username != "" {
+		user.Username = body.Username
+	}
+	if body.FirstName != "" {
+		user.FirstName = body.FirstName
+	}
+	if body.LastName != "" {
+		user.LastName = body.LastName
+	}
+
+	// Save to the database
+	result := db.DB.Save(&user)
+
+	if result.Error != nil {
+		c.JSON(500, gin.H{"error": result.Error})
 		return
 	}
 

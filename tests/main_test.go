@@ -9,6 +9,10 @@ import (
 
 var R *gin.Engine // Variale to hold Reference to Router Engine
 
+type BadBodyType struct {
+	BadField string
+}
+
 func init() {
 	StartDBAndMigrate()
 	R = SetUpRouter()

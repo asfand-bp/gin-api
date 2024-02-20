@@ -91,3 +91,49 @@ func TestDeleteUser(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, w.Code)
 }
+
+func TestCreateUserBadBody(t *testing.T) {
+	// User data bad body
+	userBadData := BadBodyType{
+		BadField: "Bad",
+	}
+
+	// Make POST api request
+	w := MakePostRequest(t, R, "/users", userBadData)
+
+	var user models.User
+	json.Unmarshal(w.Body.Bytes(), &user)
+
+	// Assertions
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+	assert.Empty(t, user)
+}
+
+func TestUpdateUserBadBody(t *testing.T) {
+	user_id := CreateUser(t, R).ID
+
+	userBadData := BadBodyType{
+		BadField: "Bad",
+	}
+
+	// Make PUT api request
+	w := MakePutRequest(t, R, fmt.Sprintf("/users/%v", user_id), userBadData)
+
+	var user models.User
+	json.Unmarshal(w.Body.Bytes(), &user)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+	assert.Empty(t, user)
+
+	DeleteUser(t, R, fmt.Sprintf("%v", user_id))
+}
+
+func TestGetUserByIDInvalidID(t *testing.T) {
+	INVALID_USER_ID := "-1"
+
+	// Make GET request
+	w := MakeGetRequest(t, R, fmt.Sprintf("/users/%s", INVALID_USER_ID))
+
+	// Assertions
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
